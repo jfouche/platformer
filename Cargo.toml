@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 bevy = "0.8.1"
 bevy_rapier2d = "0.16.2"
+rand = "0.8.5"
 
 [workspace]
 resolver = "2" # Important! wgpu/Bevy needs this!

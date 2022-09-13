@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy_rapier2d::{prelude::*, rapier::prelude::RigidBodyBuilder};
+use bevy_rapier2d::{prelude::*};
 use crate::{components::*, new_camera_2d};
 
 ///
@@ -12,7 +12,7 @@ pub fn spawn_player(mut commands: Commands, mut _materials: ResMut<Assets<ColorM
     commands
         .spawn_bundle(SpriteBundle {
             sprite: Sprite {
-                color: Color::rgb(0.7, 0.7, 0.7),
+                color: Color::rgb(0.7, 0.4, 0.5),
                 custom_size: Some(player_size),
                 ..Default::default()
             },
