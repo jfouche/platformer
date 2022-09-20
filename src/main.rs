@@ -22,6 +22,7 @@ fn main() {
         })
         .add_plugins(DefaultPlugins)
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
+        .add_plugin(RapierDebugRenderPlugin::default())
         .insert_resource(ClearColor(Color::rgb(0.04, 0.04, 0.04)))
         .add_startup_system(setup)
         .add_startup_stage("player_setup", SystemStage::single(spawn_player))
@@ -52,56 +53,3 @@ pub fn new_camera_2d() -> Camera2dBundle {
     camera.projection.scaling_mode = ScalingMode::FixedHorizontal(30.0);
     camera
 }
-
-
-
-// fn spawn_floor(mut commands: Commands, mut _materials: ResMut<Assets<ColorMaterial>>) {
-//     let width = 10.;
-//     let height = 1.;
-//     let rigid_body = RigidBody::Fixed;
-    
-//     // Bundle {
-//     //     position: Vec2::new(0.0, -2.).into(),
-//     //     body_type: RigidBodyType::Static,
-//     //     ..Default::default()
-//     // };
-//     let collider = Collider::cuboid(width / 2., height / 2.);
-
-//     commands
-//         .spawn_bundle(SpriteBundle {
-//             sprite: Sprite {
-//                 color: Color::rgb(0.7, 0.7, 0.7),
-//                 custom_size: Some(Vec2::new(width, height)),
-//                 ..Default::default()
-//             },
-//             ..Default::default()
-//         })
-//         .insert(rigid_body)
-//         .insert(collider)
-//         .insert_bundle(TransformBundle::from(Transform::from_xyz(0.0, -4.0, 0.0)))
-//         ;
-//         // .insert(RigidBodyPositionSync::Discrete);
-// }
-
-/*
-fn add_tile(commands: &mut Commands, materials: &Res<Materials>, x: f32) {
-    let rigid_body = RigidBodyBundle {
-        position: Vec2::new(x, -2.).into(),
-        body_type: RigidBodyType::Static,
-        ..Default::default()
-    };
-    let collider = ColliderBundle {
-        shape: ColliderShape::cuboid(0.5, 0.5),
-        ..Default::default()
-    };
-    commands
-        .spawn_bundle(SpriteBundle {
-            material: materials.floor_material.clone(),
-            sprite: Sprite::new(Vec2::new(1., 1.)),
-            ..Default::default()
-        })
-        .insert_bundle(rigid_body)
-        .insert_bundle(collider)
-        .insert(RigidBodyPositionSync::Discrete);
-}
- */

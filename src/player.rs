@@ -18,13 +18,14 @@ pub fn spawn_player(mut commands: Commands, mut _materials: ResMut<Assets<ColorM
             },
             ..Default::default()
         })
-        .insert(Player{ speed: 3.5 })
+        .insert(Player{ speed: 8. })
         .insert(Jumper { jump_impulse: 30., is_jumping: false})
         .insert(RigidBody::Dynamic)
         .insert(Collider::cuboid(player_size.x / 2., player_size.y / 2.))
         .insert(LockedAxes::ROTATION_LOCKED)
         .insert(ActiveEvents::COLLISION_EVENTS)
         .insert(Velocity::default())
+        .insert(Transform::from_xyz(1., 15., 0.))
         .with_children(|parent| {
             parent.spawn_bundle(new_camera_2d());
         });
