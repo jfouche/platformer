@@ -4,6 +4,7 @@ use bevy_rapier2d::{prelude::*};
 mod components;
 mod maps;
 mod player;
+mod monster;
 
 use components::*;
 use maps::spawn_floor;
@@ -23,13 +24,10 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
         .add_plugin(RapierDebugRenderPlugin::default())
+        .add_plugin(PlayerPlugin)
         .insert_resource(ClearColor(Color::rgb(0.04, 0.04, 0.04)))
         .add_startup_system(setup)
-        .add_startup_stage("player_setup", SystemStage::single(spawn_player))
         .add_startup_stage("floor_setup", SystemStage::single(spawn_floor))
-        .add_system(player_jumps)
-        .add_system(jump_reset)
-        .add_system(player_movement)
         .run();
 }
 

@@ -18,3 +18,9 @@ pub struct Materials {
     pub player_material: Handle<ColorMaterial>,
     pub floor_material: Handle<ColorMaterial>,
 }
+
+#[derive(Component)]
+pub struct Enemy;
+
+#[derive(Component)]
+pub struct Monster;
