@@ -4,10 +4,14 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use rand::{thread_rng, Rng};
 
+use crate::monster::insert_monster_at;
+
 pub fn spawn_floor(mut commands: Commands/* , mut _materials: Res<Materials> */) {
     let world = create_world(150);
     add_sprites(&mut commands/* , _materials */, &world);
     add_colliders(&world, &mut commands);
+    add_enemies(&mut commands, &world/*, &materials*/);
+
 }
 
 fn create_world(width: usize) -> Vec<u8> {
@@ -95,4 +99,26 @@ fn get_random_height_delta() -> i8 {
 
 fn get_next_height(current_height: u8) -> u8 {
     max(current_height as i8 + get_random_height_delta(), 1) as u8
+}
+
+// Function to insert monsters
+fn add_enemies(commands: &mut Commands, world: &Vec<u8>/* , materials: &Res<Materials> */) {
+    world.iter().enumerate().for_each(|(x, height)| {
+        if should_add_enemy(x) {
+            insert_monster_at(commands, x, (*height + 1).into() /* , materials */)
+        }
+    })
+}
+
+// Determines whether we should add a monster or not
+fn should_add_enemy(x: usize) -> bool {
+    if x <= 5 {
+        return false;
+    }
+    let mut rng = thread_rng();
+    let random_number: u32 = rng.gen_range(0..100);
+    match random_number {
+        0..=90 => false,
+        _ => true,
+    }
 }

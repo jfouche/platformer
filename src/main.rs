@@ -8,6 +8,7 @@ mod monster;
 
 use components::*;
 use maps::spawn_floor;
+use monster::death_by_enemy;
 use player::*;
 
 ///
@@ -28,6 +29,7 @@ fn main() {
         .insert_resource(ClearColor(Color::rgb(0.04, 0.04, 0.04)))
         .add_startup_system(setup)
         .add_startup_stage("floor_setup", SystemStage::single(spawn_floor))
+        .add_system(death_by_enemy)
         .run();
 }
 
