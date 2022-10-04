@@ -2,7 +2,6 @@ use crate::{maps::spawn_floor, components::Materials};
 
 use super::AppState;
 use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
 
 pub struct GamePlugin;
 

@@ -8,10 +8,10 @@ mod maps;
 mod player;
 mod monster;
 mod game;
+mod main_menu;
 
-use components::*;
 use game::GamePlugin;
-use maps::spawn_floor;
+use main_menu::MainMenuPlugin;
 use player::*;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
@@ -38,6 +38,7 @@ fn main() {
         .add_plugin(WorldInspectorPlugin::new())
         // Game
         .add_state(AppState::MainMenu)
+        .add_plugin(MainMenuPlugin)
         .add_plugin(GamePlugin)
         .add_plugin(PlayerPlugin)
         .insert_resource(ClearColor(Color::rgb(0.04, 0.04, 0.04)))

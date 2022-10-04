@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
-use crate::components::{Enemy, Monster, Player};
+use crate::components::{Enemy, Monster};
 
 pub fn insert_monster_at(commands: &mut Commands, x: usize, y: usize/* , materials: &Res<Materials> */) {
     let pos = Transform::from_xyz(x as f32, y as f32, 0.);
