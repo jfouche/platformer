@@ -161,6 +161,7 @@ fn death_by_height(mut commands: Commands, players: Query<(Entity, &Transform), 
     for (entity, position) in players.iter() {
         if position.translation.y < -1. {
             commands.entity(entity).despawn_recursive();
+            warn!("death_by_height");
         }
     }
 }
