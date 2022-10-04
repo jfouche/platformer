@@ -9,6 +9,7 @@ edition = "2021"
 bevy = "0.8.1"
 bevy_rapier2d = "0.16.2"
 rand = "0.8.5"
+bevy-inspector-egui = "0.12"
 
 [workspace]
 resolver = "2" # Important! wgpu/Bevy needs this!

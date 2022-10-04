@@ -1,4 +1,4 @@
-use crate::{components::*, new_camera_2d};
+use crate::{components::*, new_camera_2d, AppState};
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
@@ -11,14 +11,23 @@ struct PlayerData {
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_startup_stage("player_setup", SystemStage::single(spawn_player))
-            // .add_system(camera_follow_player)
-            .add_system(player_jumps)
-            .add_system(player_movement)
-            .add_system(jump_reset)
-            .add_system(death_by_height)
-            // .add_system(death_by_enemy)
-            ;
+        app.add_system_set(SystemSet::on_enter(AppState::InGame).with_system(spawn_player))
+            .add_system_set(
+                SystemSet::on_update(AppState::InGame)
+                    .with_system(player_jumps)
+                    .with_system(player_movement)
+                    .with_system(jump_reset)
+                    .with_system(death_by_height)
+                    .with_system(death_by_enemy),
+            )
+            .add_system_set(SystemSet::on_enter(AppState::MainMenu).with_system(cleanup))
+            .add_system_set(SystemSet::on_exit(AppState::MainMenu).with_system(cleanup));
+    }
+}
+
+fn cleanup(mut commands: Commands, query: Query<Entity>) {
+    for entity in query.iter() {
+        commands.entity(entity).despawn_recursive();
     }
 }
 
@@ -37,6 +46,7 @@ fn spawn_player(mut commands: Commands, mut _materials: ResMut<Assets<ColorMater
             },
             ..Default::default()
         })
+        .insert(Name::new("Player"))
         .insert(Player { speed: 8. })
         .insert(Jumper {
             jump_impulse: 30.,
@@ -49,7 +59,9 @@ fn spawn_player(mut commands: Commands, mut _materials: ResMut<Assets<ColorMater
         .insert(Velocity::default())
         .insert(Transform::from_xyz(1., 15., 0.))
         .with_children(|parent| {
-            parent.spawn_bundle(new_camera_2d());
+            parent
+                .spawn_bundle(new_camera_2d())
+                .insert(Name::new("Camera"));
         });
 }
 
@@ -149,6 +161,28 @@ fn death_by_height(mut commands: Commands, players: Query<(Entity, &Transform), 
     for (entity, position) in players.iter() {
         if position.translation.y < -1. {
             commands.entity(entity).despawn_recursive();
+        }
+    }
+}
+
+///
+///
+///
+pub fn death_by_enemy(
+    mut commands: Commands,
+    mut players: Query<Entity, With<Player>>,
+    enemies: Query<Entity, With<Enemy>>,
+    mut contact_events: EventReader<CollisionEvent>,
+) {
+    for contact_event in contact_events.iter() {
+        if let CollisionEvent::Started(h1, h2, _) = contact_event {
+            for player in players.iter_mut() {
+                for enemy in enemies.iter() {
+                    if (*h1 == player && *h2 == enemy) || (*h1 == enemy && *h2 == player) {
+                        commands.entity(player).despawn_recursive();
+                    }
+                }
+            }
         }
     }
 }

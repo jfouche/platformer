@@ -1,15 +1,24 @@
 use bevy::{prelude::*, render::camera::ScalingMode};
 use bevy_rapier2d::{prelude::*};
+use bevy_inspector_egui::WorldInspectorPlugin;
+
 
 mod components;
 mod maps;
 mod player;
 mod monster;
+mod game;
 
 use components::*;
+use game::GamePlugin;
 use maps::spawn_floor;
-use monster::death_by_enemy;
 use player::*;
+
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+enum AppState {
+    MainMenu,
+    InGame,
+}
 
 ///
 /// 
@@ -24,24 +33,17 @@ fn main() {
         })
         .add_plugins(DefaultPlugins)
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
+        // debug plugins
         .add_plugin(RapierDebugRenderPlugin::default())
+        .add_plugin(WorldInspectorPlugin::new())
+        // Game
+        .add_state(AppState::MainMenu)
+        .add_plugin(GamePlugin)
         .add_plugin(PlayerPlugin)
         .insert_resource(ClearColor(Color::rgb(0.04, 0.04, 0.04)))
-        .add_startup_system(setup)
-        .add_startup_stage("floor_setup", SystemStage::single(spawn_floor))
-        .add_system(death_by_enemy)
+        .add_system(main_menu_controls)
+        .add_system(display_events)
         .run();
-}
-
-///
-/// 
-/// 
-fn setup(mut commands: Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
-    // commands.spawn_bundle(new_camera_2d());
-    commands.insert_resource(Materials {
-        player_material: materials.add(Color::rgb(0.7, 0.7, 0.7).into()),
-        floor_material: materials.add(Color::rgb(0.8, 0.85, 0.85).into()),
-    });
 }
 
 ///
@@ -52,4 +54,37 @@ pub fn new_camera_2d() -> Camera2dBundle {
     let mut camera = Camera2dBundle::new_with_far(far);
     camera.projection.scaling_mode = ScalingMode::FixedHorizontal(30.0);
     camera
+}
+
+///
+/// 
+/// 
+fn display_events(
+    mut collision_events: EventReader<CollisionEvent>,
+    mut contact_force_events: EventReader<ContactForceEvent>,
+) {
+    for collision_event in collision_events.iter() {
+        println!("Received collision event: {:?}", collision_event);
+    }
+
+    for contact_force_event in contact_force_events.iter() {
+        println!("Received contact force event: {:?}", contact_force_event);
+    }
+}
+
+///
+/// 
+/// 
+fn main_menu_controls(mut keys: ResMut<Input<KeyCode>>, mut app_state: ResMut<State<AppState>>) {
+    if *app_state.current() == AppState::MainMenu {
+        if keys.just_pressed(KeyCode::Return) {
+            app_state.set(AppState::InGame).unwrap();
+            keys.reset(KeyCode::Return);
+        }
+    } else {
+        if keys.just_pressed(KeyCode::Escape) {
+            app_state.set(AppState::MainMenu).unwrap();
+            keys.reset(KeyCode::Escape);
+        }
+    }
 }

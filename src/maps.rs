@@ -38,6 +38,7 @@ fn add_tile(commands: &mut Commands /* , materials: &Res<Materials> */, x: f32, 
 
     commands
         .spawn_bundle(sprite_bundle)
+        .insert(Name::new("Tile"))
         .insert_bundle(TransformBundle::from(pos));
 }
 
@@ -76,6 +77,7 @@ fn add_collider(commands: &mut Commands, height: u8, from: usize, to: usize) {
 
     commands
         .spawn()
+        .insert(Name::new("Tile-Collider"))
         .insert(rigid_body)
         .insert(collider)
         .insert_bundle(TransformBundle::from(pos));
