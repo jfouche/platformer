@@ -23,8 +23,8 @@ impl Plugin for MainMenuPlugin {
     fn build(&self, app: &mut App) {
         app.add_system_set(SystemSet::on_enter(AppState::MainMenu).with_system(setup))
             .add_system_set(SystemSet::on_exit(AppState::MainMenu).with_system(cleanup))
-            .add_system(button_colors)
-            .add_system(button_press);
+            .add_system_set(SystemSet::on_update(AppState::MainMenu).with_system(button_colors).with_system(button_press))
+            ;
     }
 }
 

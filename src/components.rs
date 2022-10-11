@@ -24,3 +24,11 @@ pub struct Enemy;
 
 #[derive(Component)]
 pub struct Monster;
+
+pub enum GameDirection {
+    Left,
+    Right
+}
+
+#[derive(Component)]
+pub struct Bullet;

@@ -1,4 +1,4 @@
-use crate::{components::*, new_camera_2d, AppState};
+use crate::{components::*, new_camera_2d, AppState, /*bullets::{BulletOptions, insert_bullet_at}*/};
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
@@ -9,6 +9,47 @@ struct PlayerData {
     camera_entity: Entity,
 }
 
+const PLAYER_SIZE: Vec2 = Vec2::new(1.0, 1.0);
+
+#[derive(Bundle)]
+struct PlayerBundle {
+    #[bundle]
+    sprite_bundle: SpriteBundle,
+    player: Player,
+    jumper: Jumper,
+    body: RigidBody,
+    collider: Collider,
+    velocity: Velocity,
+    constraints: LockedAxes,
+    events: ActiveEvents
+}
+
+impl Default for PlayerBundle {
+    fn default() -> Self {
+        PlayerBundle {
+            sprite_bundle: SpriteBundle {
+                sprite: Sprite {
+                    color: Color::rgb(0.7, 0.4, 0.5),
+                    custom_size: Some(PLAYER_SIZE),
+                    ..Default::default()
+                },
+                transform: Transform::from_xyz(1., 15., 0.),
+                ..Default::default()
+            },
+            player: Player { speed: 8. },
+            jumper: Jumper { jump_impulse: 30., is_jumping: false},
+            body: RigidBody::Dynamic,
+            collider: Collider::cuboid(PLAYER_SIZE.x/2., PLAYER_SIZE.y/2.),
+            constraints: LockedAxes::ROTATION_LOCKED,
+            events: ActiveEvents::COLLISION_EVENTS,
+            velocity: Velocity::default()
+        }
+    }
+}
+
+///
+/// PlayerPlugin
+/// 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_system_set(SystemSet::on_enter(AppState::InGame).with_system(spawn_player))
@@ -18,8 +59,9 @@ impl Plugin for PlayerPlugin {
                     .with_system(player_movement)
                     .with_system(jump_reset)
                     .with_system(death_by_height)
-                    .with_system(death_by_enemy),
-            )
+                    .with_system(death_by_enemy)
+                    .with_system(fire_controller)
+                )
             .add_system_set(SystemSet::on_enter(AppState::MainMenu).with_system(cleanup))
             .add_system_set(SystemSet::on_exit(AppState::MainMenu).with_system(cleanup));
     }
@@ -35,29 +77,9 @@ fn cleanup(mut commands: Commands, query: Query<Entity>) {
 ///  spawn player system
 ///
 fn spawn_player(mut commands: Commands, mut _materials: ResMut<Assets<ColorMaterial>>) {
-    let player_size = Vec2::new(1.0, 1.0);
-
     commands
-        .spawn_bundle(SpriteBundle {
-            sprite: Sprite {
-                color: Color::rgb(0.7, 0.4, 0.5),
-                custom_size: Some(player_size),
-                ..Default::default()
-            },
-            ..Default::default()
-        })
+        .spawn_bundle(PlayerBundle::default())
         .insert(Name::new("Player"))
-        .insert(Player { speed: 8. })
-        .insert(Jumper {
-            jump_impulse: 30.,
-            is_jumping: false,
-        })
-        .insert(RigidBody::Dynamic)
-        .insert(Collider::cuboid(player_size.x / 2., player_size.y / 2.))
-        .insert(LockedAxes::ROTATION_LOCKED)
-        .insert(ActiveEvents::COLLISION_EVENTS)
-        .insert(Velocity::default())
-        .insert(Transform::from_xyz(1., 15., 0.))
         .with_children(|parent| {
             parent
                 .spawn_bundle(new_camera_2d())
@@ -186,4 +208,25 @@ pub fn death_by_enemy(
             }
         }
     }
+}
+
+///
+/// 
+/// 
+pub fn fire_controller(
+    keyboard_input: Res<Input<KeyCode>>,
+    mut commands: Commands,
+    materials: Res<Materials>,
+    players: Query<(&Player, &Transform), With<Player>>,
+) {
+    // if keyboard_input.just_pressed(KeyCode::Space) {
+    //     for (player, position) in players.iter() {
+    //         let options = BulletOptions {
+    //             x: position.translation.x,
+    //             y: position.translation.y,
+    //             direction: GameDirection::Right,
+    //         };
+    //         insert_bullet_at(&mut commands, /*&materials,*/ options)
+    //     }
+    // }
 }
