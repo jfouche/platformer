@@ -1,19 +1,24 @@
 use std::cmp::max;
 
-use bevy::prelude::*;
+use bevy::{prelude::*};
 use bevy_rapier2d::prelude::*;
 use rand::{thread_rng, Rng};
 
 use crate::monster::insert_monster_at;
 
-pub fn spawn_floor(mut commands: Commands/* , mut _materials: Res<Materials> */) {
+///
+/// Spawn the game floor
+///
+pub fn spawn_floor(mut commands: Commands /* , mut _materials: Res<Materials> */) {
     let world = create_world(150);
-    add_sprites(&mut commands/* , _materials */, &world);
+    add_sprites(&mut commands /* , _materials */, &world);
     add_colliders(&world, &mut commands);
-    add_enemies(&mut commands, &world/*, &materials*/);
-
+    add_enemies(&mut commands, &world /*, &materials*/);
 }
 
+///
+/// Create the world, which is a Vec of height
+///
 fn create_world(width: usize) -> Vec<u8> {
     let mut heights: Vec<u8> = Vec::with_capacity(width);
     let mut height = 1u8;
@@ -24,24 +29,26 @@ fn create_world(width: usize) -> Vec<u8> {
     heights
 }
 
+///
+///
+///
 fn add_tile(commands: &mut Commands /* , materials: &Res<Materials> */, x: f32, height: f32) {
-    let sprite_bundle = SpriteBundle {
-        sprite: Sprite {
-            color: Color::rgb(0.8, 0.85, 0.85),
-            custom_size: Some(Vec2::new(1., height)),
-            ..Default::default()
-        },
-        ..Default::default()
-    };
-
-    let pos = Transform::from_xyz(x, height / 2., 0.0);
-
     commands
-        .spawn_bundle(sprite_bundle)
-        .insert(Name::new("Tile"))
-        .insert_bundle(TransformBundle::from(pos));
+        .spawn_bundle(SpriteBundle {
+            sprite: Sprite {
+                color: Color::rgb(0.8, 0.85, 0.85),
+                custom_size: Some(Vec2::new(1., height)),
+                ..Default::default()
+            },
+            transform: Transform::from_xyz(x, height / 2., 0.0),
+            ..Default::default()
+        })
+        .insert(Name::new("Tile"));
 }
 
+///
+///
+///
 fn add_colliders(world: &Vec<u8>, commands: &mut Commands) {
     let max = match world.iter().max() {
         Some(m) => m,
@@ -67,6 +74,9 @@ fn add_colliders(world: &Vec<u8>, commands: &mut Commands) {
     })
 }
 
+///
+///
+///
 fn add_collider(commands: &mut Commands, height: u8, from: usize, to: usize) {
     let half_width = (to - from) as f32 / 2.;
     let x = from as f32 + half_width - 0.5;
@@ -83,15 +93,14 @@ fn add_collider(commands: &mut Commands, height: u8, from: usize, to: usize) {
         .insert_bundle(TransformBundle::from(pos));
 }
 
-fn add_sprites(commands: &mut Commands /* , materials: Res<Materials> */, world: &Vec<u8>) {
+fn add_sprites(commands: &mut Commands /* , materials: Res<Materials> */, world: &[u8]) {
     world.iter().enumerate().for_each(|(x, height)| {
         add_tile(commands /* , &materials */, x as f32, *height as f32);
     });
 }
 
 fn get_random_height_delta() -> i8 {
-    let mut rng = thread_rng();
-    match rng.gen_range(0..100) {
+    match thread_rng().gen_range(0..100) {
         0..=70 => 0,
         71..=80 => -1,
         81..=90 => 1,
@@ -99,12 +108,13 @@ fn get_random_height_delta() -> i8 {
     }
 }
 
+/// get the next height of the floor
 fn get_next_height(current_height: u8) -> u8 {
     max(current_height as i8 + get_random_height_delta(), 1) as u8
 }
 
-// Function to insert monsters
-fn add_enemies(commands: &mut Commands, world: &Vec<u8>/* , materials: &Res<Materials> */) {
+/// Function to insert monsters
+fn add_enemies(commands: &mut Commands, world: &Vec<u8> /* , materials: &Res<Materials> */) {
     world.iter().enumerate().for_each(|(x, height)| {
         if should_add_enemy(x) {
             insert_monster_at(commands, x, (*height + 1).into() /* , materials */)
@@ -112,7 +122,7 @@ fn add_enemies(commands: &mut Commands, world: &Vec<u8>/* , materials: &Res<Mate
     })
 }
 
-// Determines whether we should add a monster or not
+/// Determines whether we should add a monster or not
 fn should_add_enemy(x: usize) -> bool {
     if x <= 5 {
         return false;

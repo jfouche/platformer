@@ -9,6 +9,7 @@ mod player;
 mod monster;
 mod game;
 mod main_menu;
+mod bullets;
 
 use game::GamePlugin;
 use main_menu::MainMenuPlugin;

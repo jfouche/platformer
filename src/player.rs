@@ -1,4 +1,4 @@
-use crate::{components::*, new_camera_2d, AppState, /*bullets::{BulletOptions, insert_bullet_at}*/};
+use crate::{components::*, new_camera_2d, AppState, bullets::{BulletOptions, insert_bullet_at}};
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
@@ -219,14 +219,14 @@ pub fn fire_controller(
     materials: Res<Materials>,
     players: Query<(&Player, &Transform), With<Player>>,
 ) {
-    // if keyboard_input.just_pressed(KeyCode::Space) {
-    //     for (player, position) in players.iter() {
-    //         let options = BulletOptions {
-    //             x: position.translation.x,
-    //             y: position.translation.y,
-    //             direction: GameDirection::Right,
-    //         };
-    //         insert_bullet_at(&mut commands, /*&materials,*/ options)
-    //     }
-    // }
+    if keyboard_input.just_pressed(KeyCode::Space) {
+        for (player, position) in players.iter() {
+            let options = BulletOptions {
+                x: position.translation.x,
+                y: position.translation.y,
+                direction: GameDirection::Right,
+            };
+            insert_bullet_at(&mut commands, /*&materials,*/ options)
+        }
+    }
 }

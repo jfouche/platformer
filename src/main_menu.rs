@@ -90,7 +90,7 @@ fn cleanup(mut commands: Commands, menu_data: Option<Res<MainMenuData>>) {
 fn button() -> ButtonBundle {
     ButtonBundle {
         style: Style {
-            size: Size::new(Val::Px(150.0), Val::Px(65.0)),
+            size: Size::new(Val::Px(250.0), Val::Px(65.0)),
             // center button
             margin: UiRect::all(Val::Auto),
             // horizontally center child text
