@@ -10,7 +10,9 @@ mod monster;
 mod game;
 mod main_menu;
 mod bullets;
+mod button;
 
+use button::ButtonPlugin;
 use game::GamePlugin;
 use main_menu::MainMenuPlugin;
 use player::*;
@@ -39,6 +41,7 @@ fn main() {
         .add_plugin(WorldInspectorPlugin::new())
         // Game
         .add_state(AppState::MainMenu)
+        .add_plugin(ButtonPlugin)
         .add_plugin(MainMenuPlugin)
         .add_plugin(GamePlugin)
         .add_plugin(PlayerPlugin)

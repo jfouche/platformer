@@ -1,8 +1,6 @@
-use bevy::{app::AppExit, prelude::*, ecs::system::EntityCommands};
+use bevy::{app::AppExit, prelude::*};
 
-use crate::AppState;
-
-pub struct MainMenuPlugin;
+use crate::{AppState, button::{ButtonSpawner}};
 
 struct MainMenuData {
     camera_entity: Entity,
@@ -15,50 +13,13 @@ enum MenuButton {
     Quit,
 }
 
-trait ButtonSpawner<'w, 's> {
-    fn spawn_button(&mut self, label: &String, asset_server: &Res<AssetServer>) -> EntityCommands<'w, 's, '_>;
-}
-
-impl<'w, 's> ButtonSpawner<'w, 's> for ChildBuilder<'w, 's, '_> {
-    fn spawn_button(&mut self, label: &String, asset_server: &Res<AssetServer>) -> EntityCommands<'w, 's, '_> {
-        let mut e = self.spawn_bundle(ButtonBundle {
-            style: Style {
-                size: Size::new(Val::Px(250.0), Val::Px(65.0)),
-                // center button
-                margin: UiRect::all(Val::Auto),
-                // horizontally center child text
-                justify_content: JustifyContent::Center,
-                // vertically center child text
-                align_items: AlignItems::Center,
-                ..default()
-            },
-            color: NORMAL_BUTTON.into(),
-            ..default()
-        });
-        e.with_children(|btn| {
-            btn.spawn_bundle(TextBundle::from_section(
-                label,
-                TextStyle {
-                    font: asset_server.load("fonts/FiraSans-Bold.ttf"),
-                    font_size: 40.0,
-                    color: Color::rgb(0.9, 0.9, 0.9),
-                },
-            ));
-        });
-        e
-}
-}
-
-const NORMAL_BUTTON: Color = Color::rgb(0.15, 0.15, 0.15);
-const HOVERED_BUTTON: Color = Color::rgb(0.25, 0.25, 0.25);
-const PRESSED_BUTTON: Color = Color::rgb(0.35, 0.75, 0.35);
-
+pub struct MainMenuPlugin;
 
 impl Plugin for MainMenuPlugin {
     fn build(&self, app: &mut App) {
         app.add_system_set(SystemSet::on_enter(AppState::MainMenu).with_system(setup))
             .add_system_set(SystemSet::on_exit(AppState::MainMenu).with_system(cleanup))
-            .add_system_set(SystemSet::on_update(AppState::MainMenu).with_system(button_colors).with_system(button_press))
+            .add_system_set(SystemSet::on_update(AppState::MainMenu).with_system(button_press))
             ;
     }
 }
@@ -178,30 +139,6 @@ fn menu_background() -> NodeBundle {
 //         }
 //     }
 // }
-
-///
-///
-///
-fn button_colors(
-    mut interaction_query: Query<
-        (&Interaction, &mut UiColor),
-        (Changed<Interaction>, With<Button>),
-    >,
-) {
-    for (interaction, mut color) in interaction_query.iter_mut() {
-        match *interaction {
-            Interaction::Clicked => {
-                *color = PRESSED_BUTTON.into();
-            }
-            Interaction::Hovered => {
-                *color = HOVERED_BUTTON.into();
-            }
-            Interaction::None => {
-                *color = NORMAL_BUTTON.into();
-            }
-        }
-    }
-}
 
 ///
 ///
