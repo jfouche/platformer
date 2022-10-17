@@ -1,16 +1,15 @@
-use bevy::{prelude::*, render::camera::ScalingMode};
-use bevy_rapier2d::{prelude::*};
+use bevy::{prelude::*};
 use bevy_inspector_egui::WorldInspectorPlugin;
+use bevy_rapier2d::prelude::*;
 
-
-mod components;
-mod maps;
-mod player;
-mod monster;
-mod game;
-mod main_menu;
 mod bullets;
 mod button;
+mod components;
+mod game;
+mod main_menu;
+mod maps;
+mod monster;
+mod player;
 
 use button::ButtonPlugin;
 use game::GamePlugin;
@@ -24,8 +23,8 @@ enum AppState {
 }
 
 ///
-/// 
-/// 
+///
+///
 fn main() {
     App::new()
         .insert_resource(WindowDescriptor {
@@ -52,18 +51,8 @@ fn main() {
 }
 
 ///
-/// 
-/// 
-pub fn new_camera_2d() -> Camera2dBundle {
-    let far = 1000.0;
-    let mut camera = Camera2dBundle::new_with_far(far);
-    camera.projection.scaling_mode = ScalingMode::FixedHorizontal(30.0);
-    camera
-}
-
 ///
-/// 
-/// 
+///
 fn display_events(
     mut collision_events: EventReader<CollisionEvent>,
     mut contact_force_events: EventReader<ContactForceEvent>,
@@ -78,8 +67,8 @@ fn display_events(
 }
 
 ///
-/// 
-/// 
+///
+///
 fn main_menu_controls(mut keys: ResMut<Input<KeyCode>>, mut app_state: ResMut<State<AppState>>) {
     if *app_state.current() == AppState::MainMenu {
         if keys.just_pressed(KeyCode::Return) {
@@ -93,3 +82,5 @@ fn main_menu_controls(mut keys: ResMut<Input<KeyCode>>, mut app_state: ResMut<St
         }
     }
 }
+
+

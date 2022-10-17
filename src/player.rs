@@ -1,4 +1,4 @@
-use crate::{components::*, new_camera_2d, AppState, bullets::{BulletOptions, insert_bullet_at}};
+use crate::{components::*, AppState, bullets::{BulletOptions, insert_bullet_at}};
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
@@ -80,11 +80,12 @@ fn spawn_player(mut commands: Commands, mut _materials: ResMut<Assets<ColorMater
     commands
         .spawn_bundle(PlayerBundle::default())
         .insert(Name::new("Player"))
-        .with_children(|parent| {
-            parent
-                .spawn_bundle(new_camera_2d())
-                .insert(Name::new("Camera"));
-        });
+        // .with_children(|parent| {
+        //     parent
+        //         .spawn_bundle(new_camera_2d())
+        //         .insert(Name::new("Camera"));
+        // })
+        ;
 }
 
 ///
@@ -164,26 +165,10 @@ fn player_movement(
 ///
 ///
 ///
-fn camera_follow_player(
-    mut cameras: Query<&mut Transform, With<Camera>>,
-    players: Query<&Transform, With<Player>>,
-) {
-    for player in players.iter() {
-        for mut camera in cameras.iter_mut() {
-            camera.translation.x = player.translation.x;
-            camera.translation.y = player.translation.y;
-        }
-    }
-}
-
-///
-///
-///
 fn death_by_height(mut commands: Commands, players: Query<(Entity, &Transform), With<Player>>) {
     for (entity, position) in players.iter() {
         if position.translation.y < -1. {
             commands.entity(entity).despawn_recursive();
-            warn!("death_by_height");
         }
     }
 }
@@ -216,11 +201,11 @@ pub fn death_by_enemy(
 pub fn fire_controller(
     keyboard_input: Res<Input<KeyCode>>,
     mut commands: Commands,
-    materials: Res<Materials>,
+    _materials: Res<Materials>,
     players: Query<(&Player, &Transform), With<Player>>,
 ) {
     if keyboard_input.just_pressed(KeyCode::Space) {
-        for (player, position) in players.iter() {
+        for (_player, position) in players.iter() {
             let options = BulletOptions {
                 x: position.translation.x,
                 y: position.translation.y,
